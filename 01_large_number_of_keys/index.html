@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <title>Large Number of Keys</title>
+  </head>
+  <body>
+    <button id="exec">exec test</button>
+    <script>
+      const numberOfKeys = [1, 10, 100, 1000, 10000];
+
+      const execTest = () => {
+        const results = [];
+
+        for (let i = 0; i < numberOfKeys.length; i++) {
+          const n = numberOfKeys[i];
+          const keys = [...Array(n)].map(() =>
+            Math.random().toString(36).slice(-8)
+          );
+
+          const result = [];
+
+          const set = () => {
+            for (const key of keys) {
+              localStorage.setItem(key, key);
+            }
+          };
+          const setStart = performance.now();
+          set();
+          const setDuration = performance.now() - setStart;
+          console.log(`Set ${n} keys`, setDuration);
+          result.push(setDuration);
+
+          const get = () => {
+            for (const key of keys) {
+              localStorage.getItem(key);
+            }
+          };
+          const getStart = performance.now();
+          get();
+          const getDuration = performance.now() - getStart;
+          console.log(`Get ${n} keys`, getDuration);
+          result.push(getDuration);
+
+          const remove = () => {
+            for (const key of keys) {
+              localStorage.removeItem(key);
+            }
+          };
+          const removeStart = performance.now();
+          remove();
+          const removeDuration = performance.now() - removeStart;
+          console.log(`Remove ${n} keys`, removeDuration);
+          result.push(removeDuration);
+
+          results.push(result);
+        }
+
+        console.table(results);
+      };
+
+      document.getElementById("exec").addEventListener("click", execTest);
+    </script>
+  </body>
+</html>

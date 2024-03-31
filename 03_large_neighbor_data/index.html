@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <title>Large Neighbor Data</title>
+  </head>
+  <body>
+    <button id="exec">exec test</button>
+    <script>
+      const numberOfNeighborLetters = [1, 100, 10000, 1000000];
+
+      const execTest = () => {
+        const results = [];
+
+        for (let i = 0; i < numberOfNeighborLetters.length; i++) {
+          const n = numberOfNeighborLetters[i];
+          const neighborData = [...Array(n)]
+            .map(() => Math.random().toString(36).slice(-1))
+            .join("");
+          localStorage.setItem(`${n}:neighbor`, neighborData);
+
+          const data = "1";
+
+          const result = [];
+
+          const set = () => {
+            localStorage.setItem(n, data);
+          };
+          const setStart = performance.now();
+          set();
+          const setDuration = performance.now() - setStart;
+          console.log(`Set ${n} letters`, setDuration);
+          result.push(setDuration);
+
+          const get = () => {
+            localStorage.getItem(n);
+          };
+          const getStart = performance.now();
+          get();
+          const getDuration = performance.now() - getStart;
+          console.log(`Get ${n} letters`, getDuration);
+          result.push(getDuration);
+
+          const remove = () => {
+            localStorage.removeItem(n);
+          };
+          const removeStart = performance.now();
+          remove();
+          const removeDuration = performance.now() - removeStart;
+          console.log(`Remove ${n} letters`, removeDuration);
+          result.push(removeDuration);
+
+          results.push(result);
+
+          localStorage.removeItem(`${n}:neighbor`);
+        }
+
+        console.table(results);
+      };
+
+      document.getElementById("exec").addEventListener("click", execTest);
+    </script>
+  </body>
+</html>
