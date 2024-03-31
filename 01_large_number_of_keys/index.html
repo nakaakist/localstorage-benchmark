@@ -5,18 +5,24 @@
   <body>
     <button id="exec">exec test</button>
     <script>
-      const numberOfKeys = [1, 10, 100, 1000, 10000];
+      const NUMBER_OF_KEYS = [1, 2500, 5000, 7500, 10000];
+      const TEST_TRIALS = 5;
 
       const execTest = () => {
         const results = [];
 
-        for (let i = 0; i < numberOfKeys.length; i++) {
-          const n = numberOfKeys[i];
+        for (let i = 0; i < NUMBER_OF_KEYS.length; i++) {
+          const n = NUMBER_OF_KEYS[i];
           const keys = [...Array(n)].map(() =>
             Math.random().toString(36).slice(-8)
           );
 
           const result = [];
+
+          const offsetStart = performance.now();
+          for (const key of keys) {
+          }
+          const offsetDuration = performance.now() - offsetStart;
 
           const set = () => {
             for (const key of keys) {
@@ -25,7 +31,7 @@
           };
           const setStart = performance.now();
           set();
-          const setDuration = performance.now() - setStart;
+          const setDuration = performance.now() - setStart - offsetDuration;
           console.log(`Set ${n} keys`, setDuration);
           result.push(setDuration);
 
@@ -36,7 +42,7 @@
           };
           const getStart = performance.now();
           get();
-          const getDuration = performance.now() - getStart;
+          const getDuration = performance.now() - getStart - offsetDuration;
           console.log(`Get ${n} keys`, getDuration);
           result.push(getDuration);
 
@@ -47,17 +53,35 @@
           };
           const removeStart = performance.now();
           remove();
-          const removeDuration = performance.now() - removeStart;
+          const removeDuration =
+            performance.now() - removeStart - offsetDuration;
           console.log(`Remove ${n} keys`, removeDuration);
           result.push(removeDuration);
 
           results.push(result);
         }
 
-        console.table(results);
+        return results;
       };
 
-      document.getElementById("exec").addEventListener("click", execTest);
+      const execMultiTests = async () => {
+        const averages = [...Array(NUMBER_OF_KEYS.length)].map(() =>
+          [...Array(3)].map(() => 0)
+        );
+        for (let i = 0; i < TEST_TRIALS; i++) {
+          const results = execTest();
+          for (let j = 0; j < results.length; j++) {
+            for (let k = 0; k < results[j].length; k++) {
+              averages[j][k] += results[j][k] / TEST_TRIALS;
+            }
+          }
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+
+        console.table(averages);
+      };
+
+      document.getElementById("exec").addEventListener("click", execMultiTests);
     </script>
   </body>
 </html>

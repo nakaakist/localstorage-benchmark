@@ -5,13 +5,14 @@
   <body>
     <button id="exec">exec test</button>
     <script>
-      const numberOfLetters = [1, 100, 10000, 1000000];
+      const NUMBER_OF_LETTERS = [1, 2000000, 4000000, 5000000];
+      const TEST_TRIALS = 5;
 
       const execTest = () => {
         const results = [];
 
-        for (let i = 0; i < numberOfLetters.length; i++) {
-          const n = numberOfLetters[i];
+        for (let i = 0; i < NUMBER_OF_LETTERS.length; i++) {
+          const n = NUMBER_OF_LETTERS[i];
           const data = [...Array(n)]
             .map(() => Math.random().toString(36).slice(-1))
             .join("");
@@ -48,10 +49,27 @@
           results.push(result);
         }
 
-        console.table(results);
+        return results;
       };
 
-      document.getElementById("exec").addEventListener("click", execTest);
+      const execMultiTests = async () => {
+        const averages = [...Array(NUMBER_OF_LETTERS.length)].map(() =>
+          [...Array(3)].map(() => 0)
+        );
+        for (let i = 0; i < TEST_TRIALS; i++) {
+          const results = execTest();
+          for (let j = 0; j < results.length; j++) {
+            for (let k = 0; k < results[j].length; k++) {
+              averages[j][k] += results[j][k] / TEST_TRIALS;
+            }
+          }
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+
+        console.table(averages);
+      };
+
+      document.getElementById("exec").addEventListener("click", execMultiTests);
     </script>
   </body>
 </html>
