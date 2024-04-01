@@ -71,7 +71,7 @@
           await new Promise((resolve) => setTimeout(resolve, 1000));
         }
 
-        console.table(averages);
+        console.log(JSON.stringify(averages));
       };
 
       document.getElementById("exec").addEventListener("click", execMultiTests);
